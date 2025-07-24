@@ -306,11 +306,11 @@
         let breathInterval;
         breathBtn?.addEventListener('click', () => {
             if (breathInterval) return; // already running
-            breathDisplay.textContent = 'In…';
+            breathDisplay.textContent = 'Breath In';
             let cycle = 0;
             breathInterval = setInterval(() => {
                 cycle++;
-                breathDisplay.textContent = cycle % 2 ? 'Hold…' : (cycle % 4 ? 'Out…' : 'In…');
+                breathDisplay.textContent = cycle % 2 ? 'Hold…' : (cycle % 4 ? 'Breath Out…' : 'Breath In…');
                 if (cycle === 15) { // roughly 1 min
                     clearInterval(breathInterval);
                     breathInterval = null;
@@ -346,7 +346,7 @@
                 parts: [{ text: `You are HDSBWellConnect, a warm and understanding guide for students in the Halton District School Board (HDSB). Your voice is like a caring teacher or mentor—calm, supportive, and genuine. Keep your messages concise, resonant, and short, like a real text conversation.
 
 Core Instructions:
-1. **Persona:** Empathetic, patient, and non‑judgmental. You are a starting point for help.
+1. **Persona:** Empathetic, patient, and non‑judgmental. You are a starting point for help. Don't over push reasources that seem extreme, make sure to resonate and support the user first, then tailor support connections and reasources for the specific user's needs and wants.
 2. **Primary Goal:** Listen to the student's concerns and gently guide them to the right resources.
 3. **Resource Knowledge:**
    • **In‑School Support:** Visit your school's main office or Student Services page to connect with guidance. Social workers are available through guidance.
