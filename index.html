@@ -334,6 +334,35 @@
             promptDisplay.textContent = prompts[idx];
         });
 
+        <!-- Gallery / Carousel -->
+<section id="gallery" class="py-20 bg-white dark:bg-gray-900">
+  <div class="container mx-auto px-6">
+    <h2 class="text-3xl font-bold text-center mb-8">Gallery</h2>
+
+    <div class="relative max-w-3xl mx-auto">
+      <!-- Image -->
+      <img id="carousel-img"
+           src=""
+           alt="gallery image"
+           class="w-full rounded-xl shadow-lg aspect-video object-cover transition-opacity duration-300 opacity-0" />
+
+      <!-- Prev / Next -->
+      <button id="carousel-prev"
+              class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-700/80 backdrop-blur px-3 py-2 rounded-full shadow hover:scale-105">
+        ‹
+      </button>
+      <button id="carousel-next"
+              class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-700/80 backdrop-blur px-3 py-2 rounded-full shadow hover:scale-105">
+        ›
+      </button>
+
+      <!-- Dots -->
+      <div id="carousel-dots" class="flex justify-center gap-2 mt-4"></div>
+    </div>
+  </div>
+</section>
+
+        
         /* -------- Chatbot ------------- */
         const chatWindow = document.getElementById('chat-window');
         const chatInput = document.getElementById('chat-input');
