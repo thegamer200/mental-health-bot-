@@ -1,276 +1,407 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HDSB Mental Health Hub</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HDSB WellConnect</title>
+    <!-- Tailwind → CDN for rapid prototyping -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: "Inter", sans-serif;
         }
+        /* Chat bubbles */
         .chat-bubble-user {
-            background-color: #3b82f6; /* blue-500 */
-            color: white;
-            border-radius: 20px 20px 5px 20px;
+            @apply bg-blue-600 text-white rounded-2xl rounded-br-sm;
         }
         .chat-bubble-ai {
-            background-color: #e5e7eb; /* gray-200 */
-            color: #1f2937; /* gray-800 */
-            border-radius: 20px 20px 20px 5px;
+            @apply bg-gray-200 text-gray-800 rounded-2xl rounded-bl-sm dark:bg-gray-700 dark:text-gray-100;
         }
-        .smooth-scroll {
-            scroll-behavior: smooth;
+        /* Mood emoji button */
+        .mood-btn {
+            @apply text-4xl transition-transform hover:scale-110 cursor-pointer select-none;
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 smooth-scroll">
+<body class="bg-sky-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+    <!-- Quick‑exit (top‑left) -->
+    <button id="quick-exit" title="Quick Exit" class="fixed left-4 top-4 z-50 bg-red-600/90 text-white px-3 py-1.5 rounded-full text-sm hover:bg-red-700 focus:outline-none shadow-lg backdrop-blur">
+        Leave Page ▸
+    </button>
 
-    <!-- Header & Navigation -->
-    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-blue-600">HDSBWellConnect</a>
-            <div class="hidden md:flex space-x-6 items-center">
-                <a href="#home" class="text-gray-600 hover:text-blue-600 transition-colors">Home</a>
-                <a href="#chatbot" class="text-gray-600 hover:text-blue-600 transition-colors">Chat</a>
-                <a href="#resources" class="text-gray-600 hover:text-blue-600 transition-colors">Resources</a>
-                <a href="#contact" class="text-gray-600 hover:text-blue-600 transition-colors">Immediate Help</a>
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-white/60 dark:bg-gray-800/60 backdrop-blur shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#home" class="text-2xl font-bold text-blue-600 dark:text-blue-400">HDSB WellConnect</a>
+            <nav class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#home" class="hover:text-blue-600">Home</a>
+                <a href="#mood" class="hover:text-blue-600">Mood Check‑in</a>
+                <a href="#chatbot" class="hover:text-blue-600">Chat</a>
+                <a href="#resources" class="hover:text-blue-600">Resources</a>
+                <a href="#faq" class="hover:text-blue-600">FAQ</a>
+                <a href="#contact" class="hover:text-red-600">Crisis</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <!-- Dark‑mode toggle -->
+                <button id="theme-toggle" aria-label="Theme toggle" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <svg id="theme-icon" class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414m0-9.9 1.414-1.414M6.343 17.657l1.414-1.414M6.343 6.343 4.929 4.929" />
+                    </svg>
+                </button>
+                <!-- Mobile menu button -->
+                <button id="mobile-button" class="md:hidden">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
             </div>
-            <button id="mobile-menu-button" class="md:hidden flex items-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-            </button>
-        </nav>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden">
-            <a href="#home" class="block py-2 px-4 text-sm hover:bg-gray-200">Home</a>
-            <a href="#chatbot" class="block py-2 px-4 text-sm hover:bg-gray-200">Chat</a>
-            <a href="#resources" class="block py-2 px-4 text-sm hover:bg-gray-200">Resources</a>
-            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Immediate Help</a>
+        </div>
+        <!-- Mobile links -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 px-6 pb-4 space-y-2">
+            <a href="#home" class="block">Home</a>
+            <a href="#mood" class="block">Mood Check‑in</a>
+            <a href="#chatbot" class="block">Chat</a>
+            <a href="#resources" class="block">Resources</a>
+            <a href="#faq" class="block">FAQ</a>
+            <a href="#contact" class="block text-red-600">Crisis</a>
         </div>
     </header>
 
     <main>
-        <!-- Home Section -->
-        <section id="home" class="py-20 bg-blue-50">
-            <div class="container mx-auto px-6 text-center">
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Your Safe Space for Mental Wellness</h1>
-                <p class="text-lg text-gray-600 max-w-3xl mx-auto">Welcome to the HDSB Mental Health Hub. We're here to connect you with the support, resources, and guidance you need. You're not alone.</p>
-                <a href="#chatbot" class="mt-8 inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-full hover:bg-blue-700 transition-transform transform hover:scale-105">Talk to an Assistant</a>
+        <!-- Hero -->
+        <section id="home" class="relative overflow-hidden">
+            <div class="absolute inset-0 -z-10 bg-gradient-to-br from-sky-200 via-indigo-200 to-rose-100 dark:from-blue-900 dark:via-indigo-900 dark:to-purple-900"></div>
+            <svg class="absolute top-0 left-0 w-full" viewBox="0 0 1440 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 128L60 112C120 96 240 64 360 69.3C480 75 600 117 720 138.7C840 160 960 160 1080 149.3C1200 139 1320 117 1380 106.7L1440 96V0H1380C1320 0 1200 0 1080 0C960 0 840 0 720 0C600 0 480 0 360 0C240 0 120 0 60 0H0V128Z" fill="white" fill-opacity="0.6"/></svg>
+            <div class="container mx-auto px-6 pt-32 pb-24 text-center flex flex-col items-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg">A Safe Space for Every HDSB Student</h1>
+                <p class="max-w-2xl text-lg md:text-xl text-gray-700 dark:text-gray-200">Whether you need someone to listen, helpful resources, or just a moment of calm, WellConnect is here 24/7.</p>
+                <div class="mt-8 flex gap-4 flex-wrap justify-center">
+                    <a href="#chatbot" class="bg-blue-600 text-white font-semibold px-8 py-3 rounded-full shadow hover:scale-105 transition-transform">Start Chatting</a>
+                    <a href="#resources" class="bg-white/80 backdrop-blur text-blue-600 font-semibold px-8 py-3 rounded-full shadow hover:bg-white/90">Browse Resources</a>
+                </div>
             </div>
         </section>
 
-        <!-- Chatbot Section -->
-        <section id="chatbot" class="py-20">
+        <!-- Mood tracker -->
+        <section id="mood" class="py-20 bg-white dark:bg-gray-900">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl font-bold mb-6">How are you feeling today?</h2>
+                <p class="mb-8 text-gray-600 dark:text-gray-300">Tap the emoji that matches your current mood to see quick suggestions.</p>
+                <div class="flex justify-center gap-6 text-5xl">
+                    <span class="mood-btn" data-mood="Happy">😊</span>
+                    <span class="mood-btn" data-mood="Stressed">😰</span>
+                    <span class="mood-btn" data-mood="Sad">😢</span>
+                    <span class="mood-btn" data-mood="Angry">😡</span>
+                    <span class="mood-btn" data-mood="Tired">😴</span>
+                </div>
+                <div id="mood-suggestion" class="mt-10 text-lg font-medium"></div>
+            </div>
+        </section>
+
+        <!-- Chatbot -->
+        <section id="chatbot" class="py-20 bg-sky-50 dark:bg-gray-800">
             <div class="container mx-auto px-6">
-                <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg">
-                    <div class="p-6 border-b">
-                        <h2 class="text-2xl font-bold text-center">HDSB Mental Health Assistant</h2>
-                        <p class="text-center text-gray-500 mt-1">A space to talk and find support.</p>
+                <div class="max-w-3xl mx-auto bg-white dark:bg-gray-700 rounded-3xl shadow-lg">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold">WellConnect Assistant</h2>
+                            <p class="text-gray-500 dark:text-gray-300 text-sm">Powered by Gemini Flash · Private & anonymous</p>
+                        </div>
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
                     </div>
-                    <div id="chat-window" class="p-6 h-96 overflow-y-auto space-y-4">
-                        <!-- Initial AI Message -->
+                    <div id="chat-window" class="p-6 h-96 overflow-y-auto space-y-4 bg-gradient-to-b from-white/60 via-white/80 to-white dark:from-gray-700 dark:via-gray-700/80 dark:to-gray-700">
                         <div class="flex justify-start">
                             <div class="chat-bubble-ai p-4 max-w-md">
                                 <p>Hey, I'm here to listen. What's on your mind today?</p>
                             </div>
                         </div>
                     </div>
-                    <div class="p-6 bg-gray-100 rounded-b-2xl">
+                    <div class="p-6 bg-gray-100 dark:bg-gray-600 rounded-b-3xl">
                         <div class="flex">
-                            <input type="text" id="chat-input" placeholder="Type your message..." class="flex-grow px-4 py-2 border rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input id="chat-input" type="text" placeholder="Type your message..." class="flex-grow px-4 py-2 rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-500 dark:placeholder-gray-300" />
                             <button id="chat-send-button" class="bg-blue-600 text-white px-6 py-2 rounded-r-full hover:bg-blue-700">Send</button>
                         </div>
-                        <div id="loading-indicator" class="text-center mt-2 text-sm text-gray-500 hidden">
-                            <p>Assistant is typing...</p>
-                        </div>
+                        <p id="loading-indicator" class="mt-2 text-sm text-gray-500 hidden">Assistant is typing...</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Resources Section -->
-        <section id="resources" class="py-20 bg-gray-100">
+        <!-- Resources with tabs -->
+        <section id="resources" class="py-20 bg-gray-100 dark:bg-gray-800">
             <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-12">Resource Library</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Crisis Hotlines -->
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold mb-3 text-red-600">Crisis & 24/7 Support</h3>
-                        <ul class="space-y-2 text-gray-600">
-                            <li><a href="tel:911" class="hover:text-blue-600"><strong>Emergency:</strong> 911</a></li>
-                            <li><a href="tel:988" class="hover:text-blue-600"><strong>9-8-8 Suicide Crisis Helpline:</strong> Call or text 9-8-8</a></li>
-                            <li><a href="https://www.kidshelpphone.ca" target="_blank" class="hover:text-blue-600"><strong>Kids Help Phone:</strong> Text CONNECT to 686868 or call 1-800-668-6868</a></li>
-                             <li><a href="https://www.rockonline.ca/crisis" target="_blank" class="hover:text-blue-600"><strong>ROCK 24/7 Crisis Line (Halton):</strong> 905-878-9785</a></li>
-                        </ul>
+                <h2 class="text-3xl font-bold text-center mb-10">Resource Library</h2>
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button class="tab-btn bg-blue-600 text-white px-4 py-2 rounded-full shadow" data-tab="crisis">Crisis & 24/7</button>
+                    <button class="tab-btn bg-blue-100 dark:bg-gray-700 px-4 py-2 rounded-full" data-tab="school">In‑School</button>
+                    <button class="tab-btn bg-blue-100 dark:bg-gray-700 px-4 py-2 rounded-full" data-tab="provincial">Ontario & Canada</button>
+                    <button class="tab-btn bg-blue-100 dark:bg-gray-700 px-4 py-2 rounded-full" data-tab="selfhelp">Self‑Help Tools</button>
+                </div>
+
+                <div id="tab-crisis" class="tab-panel grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Crisis cards -->
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold text-red-600">Emergency (911)</h3>
+                        <p class="mt-2 text-gray-600 dark:text-gray-300">If you or someone is in immediate danger.</p>
                     </div>
-                    <!-- HDSB Resources -->
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold mb-3 text-blue-600">HDSB School Resources</h3>
-                        <ul class="space-y-2 text-gray-600">
-                            <li><strong>Guidance Counselors:</strong> Available in every HDSB secondary school. Visit your school's main office to connect.</li>
-                            <li><strong>School Social Workers:</strong> Ask your guidance counselor for a referral.</li>
-                            <li><a href="https://www.hdsb.ca/our-board/Pages/mental-health-well-being.aspx" target="_blank" class="hover:text-blue-600"><strong>HDSB Mental Health & Well-Being Page</strong></a></li>
-                        </ul>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold text-red-600">9‑8‑8 Suicide Crisis Helpline</h3>
+                        <p class="mt-2">Call or text 9‑8‑8 · 24/7 across Canada.</p>
                     </div>
-                    <!-- Provincial Services -->
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold mb-3 text-green-600">Provincial & National Services</h3>
-                        <ul class="space-y-2 text-gray-600">
-                            <li><a href="https://www.camh.ca" target="_blank" class="hover:text-blue-600"><strong>CAMH (Centre for Addiction and Mental Health)</strong></a></li>
-                            <li><a href="https://smho-smso.ca/" target="_blank" class="hover:text-blue-600"><strong>School Mental Health Ontario</strong></a></li>
-                            <li><a href="https://good2talk.ca/" target="_blank" class="hover:text-blue-600"><strong>Good2Talk (Post-secondary students):</strong> 1-866-925-5454</a></li>
-                        </ul>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">ROCK Crisis Line (Halton)</h3>
+                        <p class="mt-2">905‑878‑9785 · Youth under 18.</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">Kids Help Phone</h3>
+                        <p class="mt-2">1‑800‑668‑6868 or text CONNECT to 686868.</p>
+                    </div>
+                </div>
+
+                <!-- School resources -->
+                <div id="tab-school" class="tab-panel hidden grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">Guidance Counsellor</h3>
+                        <p class="mt-2">Visit your main office or the "Student Services" page of your school website.</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">School Social Worker</h3>
+                        <p class="mt-2">Ask your guidance counsellor for a referral.</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">HDSB Mental Health Strategy</h3>
+                        <a href="https://www.hdsb.ca/our-board/Pages/mental-health-well-being.aspx" target="_blank" class="mt-2 inline-block text-blue-600 dark:text-blue-400 hover:underline">View Plan</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow md:col-span-2 lg:col-span-1 flex flex-col justify-between">
+                        <h3 class="text-xl font-semibold">School Mental Health Champions</h3>
+                        <p class="mt-2 flex-grow">Each secondary school has students trained to promote well‑being initiatives. Ask your guidance office how to get involved.</p>
+                    </div>
+                </div>
+
+                <!-- Provincial -->
+                <div id="tab-provincial" class="tab-panel hidden grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">CAMH Youth Wellness</h3>
+                        <a href="https://www.camh.ca/en/health-info/youth-wellness" target="_blank" class="mt-2 inline-block text-blue-600 dark:text-blue-400 hover:underline">camh.ca</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">School Mental Health Ontario</h3>
+                        <a href="https://smho-smso.ca/" target="_blank" class="mt-2 inline-block text-blue-600 dark:text-blue-400 hover:underline">smho‑smso.ca</a>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">Good2Talk (Post‑secondary)</h3>
+                        <p class="mt-2">1‑866‑925‑5454 · 24/7</p>
+                    </div>
+                </div>
+
+                <!-- Self‑help -->
+                <div id="tab-selfhelp" class="tab-panel hidden grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">Mindfulness Breathing Timer</h3>
+                        <button id="breath-btn" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-full">Start 1‑min Calm</button>
+                        <p id="breath-display" class="mt-2 text-lg font-medium"></p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-xl shadow">
+                        <h3 class="text-xl font-semibold">Journal Prompt Generator</h3>
+                        <button id="prompt-btn" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-full">New Prompt</button>
+                        <p id="prompt-display" class="mt-2 italic"></p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contact / Immediate Help Section -->
-        <section id="contact" class="py-20 bg-red-50">
+        <!-- FAQ -->
+        <section id="faq" class="py-20 bg-white dark:bg-gray-900">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-10">Frequently Asked Questions</h2>
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <details class="p-4 border rounded-lg dark:border-gray-600">
+                        <summary class="font-semibold cursor-pointer">Is WellConnect confidential?</summary>
+                        <p class="mt-2">Yes. Your chat is private and not stored by HDSB. For urgent safety concerns, always call 9‑8‑8 or 911.</p>
+                    </details>
+                    <details class="p-4 border rounded-lg dark:border-gray-600">
+                        <summary class="font-semibold cursor-pointer">Can this replace therapy?</summary>
+                        <p class="mt-2">No. WellConnect offers guidance and resources but is not a substitute for professional counselling.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crisis Contact -->
+        <section id="contact" class="py-20 bg-red-50 dark:bg-red-900/40">
             <div class="container mx-auto px-6 text-center">
-                <h2 class="text-3xl font-bold text-red-700 mb-4">In Crisis? Get Immediate Help.</h2>
-                <p class="text-lg text-red-600 max-w-3xl mx-auto mb-8">If you or someone you know is in immediate danger, please use these resources. You are not alone and help is available.</p>
-                <div class="flex flex-wrap justify-center items-center gap-4">
-                     <a href="tel:988" class="bg-red-600 text-white font-semibold px-8 py-4 rounded-full hover:bg-red-700 transition-transform transform hover:scale-105">Call or Text 9-8-8</a>
-                     <a href="tel:905-878-9785" class="bg-red-600 text-white font-semibold px-8 py-4 rounded-full hover:bg-red-700 transition-transform transform hover:scale-105">Call Halton Crisis Line</a>
-                     <a href="https://www.kidshelpphone.ca" target="_blank" class="bg-gray-700 text-white font-semibold px-8 py-4 rounded-full hover:bg-gray-800 transition-transform transform hover:scale-105">Visit Kids Help Phone</a>
+                <h2 class="text-3xl font-bold text-red-700 dark:text-red-400 mb-4">Need Immediate Help?</h2>
+                <p class="text-lg max-w-3xl mx-auto mb-8">Call 9‑8‑8 · If you or someone you know is in crisis or feeling unsafe, reach out right now. You matter.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="tel:988" class="bg-red-600 text-white font-semibold px-8 py-4 rounded-full hover:bg-red-700 transition-transform hover:scale-105">Call / Text 9‑8‑8</a>
+                    <a href="tel:905-878-9785" class="bg-red-600 text-white font-semibold px-8 py-4 rounded-full hover:bg-red-700 transition-transform hover:scale-105">Halton Crisis Line</a>
+                    <a href="https://www.kidshelpphone.ca" target="_blank" class="bg-gray-800 text-white font-semibold px-8 py-4 rounded-full hover:bg-gray-900 transition-transform hover:scale-105">Kids Help Phone</a>
                 </div>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <p>&copy; 2024 HDSBWellConnect. A student support initiative.</p>
-            <p class="text-sm text-gray-400 mt-2">This is not an official HDSB website. It is a conceptual project for supporting student mental health.</p>
+    <footer class="bg-gray-800 text-gray-200">
+        <div class="container mx-auto px-6 py-8 text-center space-y-2 text-sm">
+            <p>© 2025 WellConnect · Student‑led mental‑health initiative</p>
+            <p class="text-gray-400">Not an official HDSB website. For emergencies, dial 911.</p>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script>
-        // Mobile Menu Toggle
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        /* ------------ Theme ------------- */
+        const htmlEl = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        if (localStorage.theme === 'dark') htmlEl.classList.add('dark');
+        themeToggle.addEventListener('click', () => {
+            htmlEl.classList.toggle('dark');
+            localStorage.theme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+            themeIcon.classList.toggle('rotate-180');
         });
 
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                mobileMenu.classList.add('hidden'); // Close menu on click
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+        /* -------- Mobile nav ---------- */
+        const mobileBtn = document.getElementById('mobile-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+        /* ---------- Quick exit -------- */
+        document.getElementById('quick-exit').addEventListener('click', () => {
+            window.location.href = 'https://www.google.com';
+        });
+
+        /* -------- Mood tracker -------- */
+        const moodMap = {
+            Happy: 'Keep shining! Consider sharing your positivity with a friend who might need it.',
+            Stressed: 'Try a 1‑minute breathing exercise below or chat with our assistant.',
+            Sad: 'It might help to reach out to Kids Help Phone (text CONNECT to 686868).',
+            Angry: 'Take a short walk or listen to calming music. You could also chat with ROCK at 905‑878‑9785.',
+            Tired: 'Hydrate, stretch, and if possible, allow yourself a short rest.'
+        };
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mood = btn.dataset.mood;
+                document.getElementById('mood-suggestion').textContent = moodMap[mood];
             });
         });
 
-        // Chatbot Logic
+        /* -------- Tabs logic -------- */
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('bg-blue-600', 'bg-blue-100'));
+                btn.classList.replace('bg-blue-100', 'bg-blue-600');
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+                document.getElementById('tab-' + target).classList.remove('hidden');
+            });
+        });
+
+        /* ---- Self‑help: breathing ---- */
+        const breathBtn = document.getElementById('breath-btn');
+        const breathDisplay = document.getElementById('breath-display');
+        let breathInterval;
+        breathBtn?.addEventListener('click', () => {
+            if (breathInterval) return; // already running
+            breathDisplay.textContent = 'In…';
+            let cycle = 0;
+            breathInterval = setInterval(() => {
+                cycle++;
+                breathDisplay.textContent = cycle % 2 ? 'Hold…' : (cycle % 4 ? 'Out…' : 'In…');
+                if (cycle === 15) { // roughly 1 min
+                    clearInterval(breathInterval);
+                    breathInterval = null;
+                    breathDisplay.textContent = 'Great job!';
+                }
+            }, 4000);
+        });
+
+        /* ---- Journal prompt --------- */
+        const prompts = [
+            'Write three things you’re grateful for today.',
+            'Describe a place where you feel safe.',
+            'What’s one small victory you had this week?',
+            'Name someone who supports you and why you appreciate them.',
+            'What does self‑care mean to you today?'
+        ];
+        const promptBtn = document.getElementById('prompt-btn');
+        const promptDisplay = document.getElementById('prompt-display');
+        promptBtn?.addEventListener('click', () => {
+            const idx = Math.floor(Math.random() * prompts.length);
+            promptDisplay.textContent = prompts[idx];
+        });
+
+        /* -------- Chatbot ------------- */
         const chatWindow = document.getElementById('chat-window');
         const chatInput = document.getElementById('chat-input');
         const sendButton = document.getElementById('chat-send-button');
         const loadingIndicator = document.getElementById('loading-indicator');
 
-        // Initialize chat history with the new, refined system prompt including 9-8-8.
         const chatHistory = [
             {
-                role: "user",
+                role: 'user',
                 parts: [{ text: `You are HDSBWellConnect, a warm and understanding guide for students in the Halton District School Board (HDSB). Your voice is like a caring teacher or mentor—calm, supportive, and genuine. Keep your messages concise, resonant, and short, like a real text conversation.
 
 Core Instructions:
-1.  **Persona:** Empathetic, patient, and non-judgmental. You are a starting point for help.
-2.  **Primary Goal:** Listen to the student's concerns and gently guide them to the right resources.
-3.  **Resource Knowledge:**
-    * **In-School Support:** To find a guidance counselor, you should tell students to visit their school's main office or check the school website under "Student Services." Counselors are the best first step for academic and personal support. Social workers are also available through guidance.
-    * **Immediate Crisis:** If a student mentions feeling unsafe, wanting to self-harm, or being in a crisis, your immediate and only response should be to strongly recommend calling or texting 9-8-8, or calling 911.
-    * **Halton-Specific Crisis:** For youth under 18 in Halton, also recommend the ROCK Crisis Line at 905-878-9785.
-    * **General Support:** For any other issue, recommend Kids Help Phone (call 1-800-668-6868, text CONNECT to 686868) as a primary, confidential resource available 24/7.
-4.  **Guidance, Not Therapy:** You are here to support and guide. Gently encourage users to connect with professionals (like counselors or Kids Help Phone) for deeper conversations. Frame this as a positive next step for their well-being. Avoid giving direct advice. Instead, ask questions and offer resources.
-5.  **Boundaries:** If asked about topics outside of mental health and school life, gently steer the conversation back. Say something like, "I'm here to focus on you and your well-being. How are you feeling?"` }]
+1. **Persona:** Empathetic, patient, and non‑judgmental. You are a starting point for help.
+2. **Primary Goal:** Listen to the student's concerns and gently guide them to the right resources.
+3. **Resource Knowledge:**
+   • **In‑School Support:** Visit your school's main office or Student Services page to connect with guidance. Social workers are available through guidance.
+   • **Immediate Crisis:** If a student mentions self‑harm or feeling unsafe, strongly recommend 9‑8‑8 or 911.
+   • **Halton Crisis:** For youth under 18, ROCK Crisis Line 905‑878‑9785.
+   • **General Support:** Kids Help Phone 1‑800‑668‑6868 or text CONNECT to 686868.
+4. **Guidance, Not Therapy:** Encourage professional help; avoid direct advice.
+5. **Boundaries:** If asked outside mental health, steer back, e.g., "I'm here to focus on you and your well‑being. How are you feeling?"` }]
             },
-            {
-                role: "model",
-                parts: [{ text: "I understand. I'm ready to be a supportive guide for HDSB students. My responses will be warm, concise, and focused on connecting them with the help they need, especially the new 9-8-8 crisis line." }]
-            }
+            { role: 'model', parts: [{ text: 'Understood. I will respond warmly and connect students with the best resource for them.' }] }
         ];
 
         async function getAiResponse() {
             loadingIndicator.classList.remove('hidden');
             sendButton.disabled = true;
             chatInput.disabled = true;
-
-            const payload = { contents: chatHistory.slice(-12) }; // Send last 12 messages for context
-            const apiKey = ""; // API key is handled by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDMbMxoJELSuRgps57WT8D7PdXRgWcR7dI`;
-
+            const payload = { contents: chatHistory.slice(-12) };
             try {
-                const response = await fetch(apiUrl, {
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDMbMxoJELSuRgps57WT8D7PdXRgWcR7dI', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                
-                if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-
                 const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    addMessageToChat(text, 'ai');
-                    chatHistory.push({ role: "model", parts: [{ text: text }] });
-                } else {
-                    addMessageToChat('I am having trouble connecting right now. Please try again in a moment.', 'ai');
-                }
-
-            } catch (error) {
-                console.error("Error fetching AI response:", error);
-                addMessageToChat('Sorry, I couldn\'t get a response. Please check your connection and try again.', 'ai');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                sendButton.disabled = false;
-                chatInput.disabled = false;
-                chatInput.focus();
+                const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, something went wrong.';
+                addMessage(text, 'ai');
+                chatHistory.push({ role: 'model', parts: [{ text }] });
+            } catch (err) {
+                addMessage('I couldn\'t connect right now. Please try again later.', 'ai');
             }
+            loadingIndicator.classList.add('hidden');
+            sendButton.disabled = false;
+            chatInput.disabled = false;
+            chatInput.focus();
         }
-
-        function addMessageToChat(message, sender) {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('flex', sender === 'user' ? 'justify-end' : 'justify-start');
-            
+        function addMessage(msg, sender) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
             const bubble = document.createElement('div');
-            bubble.classList.add('p-4', 'max-w-md', sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai');
-            // Use innerHTML to correctly render line breaks from the AI's response
-            bubble.innerHTML = message.replace(/\n/g, '<br>');
-
-            messageElement.appendChild(bubble);
-            chatWindow.appendChild(messageElement);
+            bubble.innerHTML = msg.replace(/\n/g, '<br/>');
+            bubble.className = `${sender === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'} p-4 max-w-md`;
+            wrapper.appendChild(bubble);
+            chatWindow.appendChild(wrapper);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
-
         function handleSend() {
-            const userInput = chatInput.value.trim();
-            if (userInput) {
-                addMessageToChat(userInput, 'user');
-                chatHistory.push({ role: "user", parts: [{ text: userInput }] });
-                getAiResponse();
-                chatInput.value = '';
-            }
+            const text = chatInput.value.trim();
+            if (!text) return;
+            addMessage(text, 'user');
+            chatHistory.push({ role: 'user', parts: [{ text }] });
+            chatInput.value = '';
+            getAiResponse();
         }
-
         sendButton.addEventListener('click', handleSend);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSend();
-            }
-        });
-
+        chatInput.addEventListener('keypress', e => e.key === 'Enter' && handleSend());
     </script>
 </body>
 </html>
